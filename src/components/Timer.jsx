@@ -32,9 +32,6 @@ const ReverseTimer = ({ durationInSeconds, onTimeout }) => {
     <Paper elevation={3} style={{ padding: '16px', textAlign: 'center' }}>
       {remainingSeconds > 0 ? (
         <Box display="flex" flexDirection="column" alignItems="center"> {/* Use the Box component for centering */}
-          <Typography variant="h5" component="p">
-            Time Remaining
-          </Typography>
           <Typography variant="h4" component="p">
             {formatTime(remainingSeconds)}
           </Typography>
