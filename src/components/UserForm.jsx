@@ -4,8 +4,13 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useRouter } from 'next/router';
+import LogoWrapper from './LogoWrapper';
+import axios from 'axios';
 
 const UserForm = () => {
+
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMsg, setAlertMsg] = useState('');
 
   const router = useRouter()
 
@@ -15,6 +20,7 @@ const UserForm = () => {
     userMobile: '',
     agentBadgeNo: '',
     agentOrganization: '',
+    apartment: ''
   });
 
   const handleInputChange = (event) => {
@@ -25,26 +31,38 @@ const UserForm = () => {
     }));
   };
 
-//   two ways to pass the response to home
-// 1. by query: router.push("/home?data=data")
-// 2. make a global state provider, then
-// const { setValue } = useValue();
-// async function handleSubmit(event) {
-//   const response = await getResponse();
-//   setValue(response);
-//   router.push("/home");
-// }
   const handleSubmit = async (event) => {
     event.preventDefault();
     console.log('Form submitted with data:', userData);
     try {
-        // const response = await axios.post('http://localhost:5000/calculate', userData);
-        if (true){
-            console.log('response success, go to home')
-            router.push('/home')
+        console.log('userData', userData);
+        const response = await axios.post('https://7ae4-117-233-240-35.ngrok-free.app/delivery/checkin', userData);
+        console.log('res from axios', response)
+
+        if(response.status === 200){
+          console.log('response.data', response.data)
+          // router.push(`/home/?data=${response.data}`)
+          router.push({
+            pathname: '/home',
+            query: {data: JSON.stringify(response.data)}
+          })
         }
+
+        // if(response.status === 400){
+
+        
+        // }
     } catch (error) {
-        console.log('err - ', error)
+          console.log('error.response.data', error.response.data)
+        //   showAlert(true);
+        //   setAlertMsg(error.response.data)
+        //   setUserData({
+        //     userName: '',
+        //     userMobile: '',
+        //     agentBadgeNo: '',
+        //     agentOrganization: '',
+        //     apartment: ''
+        // })
     }
     // clear form input
     setUserData({
@@ -52,11 +70,16 @@ const UserForm = () => {
         userMobile: '',
         agentBadgeNo: '',
         agentOrganization: '',
+        apartment: ''
     })
   };
   return (
+    <>
     <form onSubmit={handleSubmit}>
       <Grid container spacing={2} justifyContent="center" alignItems="center">
+      <Grid item xs={12}>
+          <LogoWrapper />
+        </Grid>
         <Grid item xs={12}>
           <Typography variant="h6" gutterBottom>
             Owner Details
@@ -77,10 +100,22 @@ const UserForm = () => {
             label="User Mobile"
             id="userMobile"
             name="userMobile"
+            type="number"
             value={userData.userMobile}
             onChange={handleInputChange}
             variant="outlined"
             required
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            label="Apartment"
+            id="apartment"
+            name="apartment"
+            value={userData.apartment}
+            onChange={handleInputChange}
+            variant="outlined"
             fullWidth
           />
         </Grid>
@@ -118,6 +153,14 @@ const UserForm = () => {
         </Grid>
       </Grid>
     </form>
+
+      {/* <Grid item xs={12}>
+          <Typography variant="h6" gutterBottom>
+            Opps - {}
+          </Typography>
+      </Grid> */}
+
+    </>
   );
 };
 

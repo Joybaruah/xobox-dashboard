@@ -33,11 +33,15 @@ const ReverseTimer = ({ durationInSeconds, onTimeout }) => {
       {remainingSeconds > 0 ? (
         <Box display="flex" flexDirection="column" alignItems="center"> {/* Use the Box component for centering */}
           <Typography variant="h5" component="p">
-            Time Remaining:
+            Time Remaining
           </Typography>
           <Typography variant="h4" component="p">
             {formatTime(remainingSeconds)}
           </Typography>
+          <Typography variant="h7" component="p">
+            Please complete the delivery before timer ends
+          </Typography>
+
         </Box>
       ) : (
         <Typography variant="h5" component="p" color="secondary">
