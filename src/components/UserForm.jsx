@@ -36,7 +36,7 @@ const UserForm = () => {
     console.log('Form submitted with data:', userData);
     try {
         console.log('userData', userData);
-        const response = await axios.post('https://7ae4-117-233-240-35.ngrok-free.app/delivery/checkin', userData);
+        const response = await axios.post('http://3.70.147.113:3001/delivery/checkin', userData);
         console.log('res from axios', response)
 
         if(response.status === 200){

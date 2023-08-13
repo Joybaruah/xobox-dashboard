@@ -17,7 +17,7 @@ const Home = () => {
   const handleDelivered = async () => {
     console.log("delivered clicked");
     const response = await axios.post(
-      "https://7ae4-117-233-240-35.ngrok-free.app/delivery/delivered",
+      "http://3.70.147.113:3001/delivery/delivered",
       JSON.parse(data)
     );
     console.log("response from delivered", response);
@@ -29,7 +29,7 @@ const Home = () => {
   const handleClick = async () => {
     setUnlockPressed(true);
     const response = await axios.post(
-      "https://7ae4-117-233-240-35.ngrok-free.app/delivery/unlock",
+      "http://3.70.147.113:3001/delivery/unlock",
       JSON.parse(data)
     );
     console.log("response from unlock", response);
