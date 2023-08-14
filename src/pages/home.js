@@ -93,55 +93,6 @@ const Home = () => {
         </Box>
       </Container>
     </Box>
-    // <Box
-    //   display="flex"
-    //   flexDirection="column"
-    //   justifyContent="center"
-    //   alignItems="center"
-    //   minHeight="100vh"
-    //   bgcolor="#f4f6f8"
-    // >
-    //   <Container maxWidth="sm">
-    //     <LogoWrapper />
-    //     <Box
-    //       bgcolor="white"
-    //       p={4}
-    //       borderRadius={4}
-    //       boxShadow={3}
-    //       textAlign="center"
-    //       marginTop="16px"
-    //     >
-    //       <Typography variant="h4" gutterBottom>
-    //         Time Remaining
-    //       </Typography>
-    //       <div style={{ marginBottom: "16px" }}>
-    //         <ReverseTimer durationInSeconds={200} onTimeout={handleTimeout} />
-    //       </div>
-    //       <div style={{ marginBottom: "16px" }}>
-    //         <Button
-    //           variant="contained"
-    //           color="primary"
-    //           size="large"
-    //           onClick={handleClick}
-    //         >
-    //           Unlock
-    //         </Button>
-    //       </div>
-    //       {unlockPressed && (
-    //         <div style={{ marginBottom: "16px" }}>
-    //           <Button
-    //             variant="contained"
-    //             color="success"
-    //             size="large"
-    //             onClick={handleDelivered}
-    //           >
-    //             Delivered
-    //           </Button>
-    //         </div>
-    //       )}
-    //     </Box>
-    //   </Container>
-    // </Box>
   );
 };
 

@@ -1,67 +1,61 @@
 import React, { useState, useEffect } from "react";
 import DashboardTable from "@/components/DashboardTable";
 import Button from "@mui/material/Button";
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import { Modal, Typography } from "@mui/material";
+import QrCodeIcon from "@mui/icons-material/QrCode";
+import QRCode from "qrcode.react";
 
-// this will come from api call
-const entriesSample = [
-    {
-      apartmentNumber: 'A101',
-      userNameOwner: 'John Doe',
-      userIdOwner: 'User123',
-      daOrganisation: 'Delivery Inc.',
-      daName: 'Delivery Agent 1',
-      daPhoneNumber: '+1 123-456-7890',
-      gdaCheckinTime: '2023-08-10 08:00:00',
-      daCheckoutTime: '2023-08-10 17:30:00',
-      deliveryDuration: '9:30',
-      transactionStatus: 'Completed',
-      deliveryBoxNumber: 'Box 123',
-    },
-    {
-      apartmentNumber: 'B202',
-      userNameOwner: 'Jane Smith',
-      userIdOwner: 'User456',
-      daOrganisation: 'Delivery Express',
-      daName: 'Delivery Agent 2',
-      daPhoneNumber: '+1 987-654-3210',
-      gdaCheckinTime: '2023-08-11 09:15:00',
-      daCheckoutTime: '2023-08-11 17:00:00',
-      deliveryDuration: '7:45',
-      transactionStatus: 'Pending',
-      deliveryBoxNumber: 'Box 456',
-    },
-  ];
 const Dashboard = () => {
   const [tempAuth, setTempAuth] = useState(false);
-  const [userName, setUserName] = useState('');
-  const [password, setPassword] = useState('');
-  const [entries, setEntries] = useState([]);
-  const [page, setPage] = useState(1);
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
+  const [data, setData] = useState([]);
 
   const handleLogin = (userName, password) => {
-
-    if(userName === 'admin' && password === 'password'){
-        setTempAuth(true);
+    if (userName === "admin" && password === "xobox@admin") {
+      setTempAuth(true);
     }
   };
 
   const handlePrevPage = () => {
-    if (page > 1) {
-      setPage((prev) => prev - 1);
-    }
+    const array = data.result;
+    const firstItem = array[0];
+
+    fetch(
+      `http://3.70.147.113:3001/delivery/?apartment=BGyS8YrV0Uwu6Uq0sV4c&start_before=${firstItem.id}`
+    )
+      .then((res) => res.json())
+      .then((resJson) => {
+        setData(resJson);
+      })
+      .catch((err) => {
+        console.log("errr", err);
+      });
   };
 
   const handleNextPage = () => {
-    setPage((prev) => prev + 1);
+    const array = data.result;
+    const lastItem = array[array.length - 1];
+
+    fetch(
+      `http://3.70.147.113:3001/delivery/?apartment=BGyS8YrV0Uwu6Uq0sV4c&start_at=${lastItem.id}`
+    )
+      .then((res) => res.json())
+      .then((resJson) => {
+        setData(resJson);
+      })
+      .catch((err) => {
+        console.log("errr", err);
+      });
   };
 
   const fetchFunc = () => {
-    fetch(`/?page=${page}`)
+    fetch(`http://3.70.147.113:3001/delivery/?apartment=BGyS8YrV0Uwu6Uq0sV4c`)
       .then((res) => res.json())
       .then((resJson) => {
-        setEntries(resJson.something);
+        setData(resJson);
       })
       .catch((err) => {
         console.log("errr", err);
@@ -70,22 +64,105 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchFunc();
-  }, [page]);
+  }, []);
+
+  // QR MODAL
+  const [open, setOpen] = useState(false);
+
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    p: 4,
+    display: "flex",
+    flexDirection: "column",
+  };
+
+  const downloadQRCode = () => {
+    // Generate download with use canvas and stream
+    const canvas = document.getElementById("qr-gen");
+    const pngUrl = canvas
+      .toDataURL("image/png")
+      .replace("image/png", "image/octet-stream");
+    console.log(canvas);
+    let downloadLink = document.createElement("a");
+    downloadLink.href = pngUrl;
+    downloadLink.download = `xoboxqr.png`;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  };
 
   return (
     <div>
       {tempAuth ? (
         <>
-          <DashboardTable entries={entriesSample} />
-          <div style={{ marginTop: "8px" }}>
+          <div
+            style={{
+              marginTop: "8px",
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              gap: "10px",
+              margin: "1rem",
+            }}
+          >
+            <Typography>Admin</Typography>
+            <Button onClick={() => setOpen((prev) => !prev)} variant="text">
+              <QrCodeIcon />
+            </Button>
+          </div>
+
+          <Modal
+            open={open}
+            onClose={() => setOpen((prev) => !prev)}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={style}>
+              <QRCode
+                id="qr-gen"
+                size={290}
+                level={"H"}
+                includeMargin={true}
+                value="http://3.70.147.113:3002/?apartment=BGyS8YrV0Uwu6Uq0sV4c"
+              />
+              <Button
+                onClick={downloadQRCode}
+                variant="outlined"
+                style={{ marginTop: "30px" }}
+              >
+                Download QR Code
+              </Button>
+            </Box>
+          </Modal>
+
+          <DashboardTable entries={data?.result || []} />
+          <div
+            style={{
+              marginTop: "8px",
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: "10px",
+              margin: "1rem",
+            }}
+          >
             <Button
               onClick={handlePrevPage}
               variant="outlined"
-              disabled={page <= 1}
+              disabled={!data?.hasPreviousPage}
             >
               Prev
             </Button>
-            <Button onClick={handleNextPage} variant="outlined">
+            <Button
+              onClick={handleNextPage}
+              variant="outlined"
+              disabled={!data?.hasNextPage}
+            >
               Next
             </Button>
           </div>
@@ -115,10 +192,14 @@ const Dashboard = () => {
               type="password"
               fullWidth
             />
-            <div style={{display: 'flex', justifyContent: 'center'}}>
-            <Button variant="contained" color="primary" onClick={() => handleLogin(userName, password)}>
-              Login
-            </Button>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => handleLogin(userName, password)}
+              >
+                Login
+              </Button>
             </div>
           </div>
         </Box>
