@@ -5,6 +5,7 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { Modal, Typography } from "@mui/material";
 import QrCodeIcon from "@mui/icons-material/QrCode";
+import LogoutIcon from '@mui/icons-material/Logout';
 import QRCode from "qrcode.react";
 
 const Dashboard = () => {
@@ -13,9 +14,18 @@ const Dashboard = () => {
   const [password, setPassword] = useState("");
   const [data, setData] = useState([]);
 
+  useEffect(() => {
+    let login = localStorage.getItem("isLoggedIn")
+    if (JSON.parse(login) == true){
+      setTempAuth(true);
+    }
+  }, [])
+  
+
   const handleLogin = (userName, password) => {
     if (userName === "admin" && password === "xobox@admin") {
       setTempAuth(true);
+      localStorage.setItem("isLoggedIn", JSON.stringify(true))
     }
   };
 
@@ -114,6 +124,12 @@ const Dashboard = () => {
             <Typography>Admin</Typography>
             <Button onClick={() => setOpen((prev) => !prev)} variant="text">
               <QrCodeIcon />
+            </Button>
+            <Button onClick={() => {
+              localStorage.removeItem("isLoggedIn")
+              setTempAuth(false)
+            }} variant="text">
+              <LogoutIcon />
             </Button>
           </div>
 

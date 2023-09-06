@@ -60,6 +60,7 @@ const UserForm = () => {
 
     try {
       console.log("userData", userData);
+      setLoading(true)
       const response = await axios.post(
         "http://3.70.147.113:3001/delivery/checkin",
         userData
@@ -73,7 +74,9 @@ const UserForm = () => {
           query: { data: JSON.stringify(response.data) },
         });
       }
+      setLoading(false)
     } catch (error) {
+      setLoading(false)
       console.log("error.response.data", error.response.data);
     }
     // clear form input
